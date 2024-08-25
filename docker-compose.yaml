@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  # Backend service
+  backend:
+    image: surarahul/backend:latest
+    container_name: backend-container
+    ports:
+     - "8080:8080"
+    networks:
+      - backend-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:file:~/mydatabase  # Default H2 URL; adjust if needed
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: # No password needed for H2
+      SPRING_H2_CONSOLE_ENABLED: 'true'  # Optional: Enable H2 console if you want to access it
+
+  # Frontend service
+  frontend:
+    image: surarahul/frontend:latest
+    container_name: frontend-container
+    ports:
+      - "80:80"  # Adjust if your frontend service uses a different port
+    environment:
+      - REACT_APP_API_URL=http://backend:8080
+    depends_on:
+      - backend
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
